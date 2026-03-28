@@ -1,0 +1,286 @@
+# 📘 Technical Mission: Multi-Language CRM Platform for Educational Centers
+
+## 1. Project Overview
+
+This project is a SaaS-based CRM platform designed for local educational centers to manage students, teachers, parents, finances, and academic processes efficiently.
+
+The system will support three languages:
+
+* Uzbek (O‘zbek)
+* English
+* Russian (Русский)
+
+It will also include:
+
+* Light Mode
+* Dark Mode
+
+---
+
+## 2. User Roles
+
+The platform will support the following roles:
+
+1. Admin
+2. Teacher
+3. Student
+4. Parent
+
+Each role will have separate access levels and dashboards.
+
+---
+
+## 3. Core Features
+
+### 3.1 Admin Panel
+
+#### Dashboard
+
+* Daily revenue overview
+* Active students count
+* Outstanding payments (debts)
+* New registrations
+* Teacher activity
+
+#### User Management
+
+* Create/Edit/Delete users
+* Assign roles (Admin, Teacher, Student, Parent)
+* View user profiles with full history
+
+#### Student Creation Flow
+
+When admin creates a student:
+
+* Input: Full Name
+* System automatically generates:
+
+  * Student username (unique)
+  * Two parent usernames (unique)
+  * Random passwords for all
+
+#### Login Card Generation (PDF)
+
+Admin can generate a printable PDF containing:
+
+Student:
+Login: ali.valiyev
+Password: X7kP9mQ2
+
+Parent:
+Login: ali.valiyev.p1
+Password: AbC123xY
+
+⚠️ Passwords are shown ONLY once and stored as hashed values in the database.
+
+#### Course & Group Management
+
+* Create courses
+* Assign teachers
+* Create groups
+* Add students to groups
+
+#### Schedule Management
+
+* Weekly timetable
+* Conflict detection
+* Drag & drop interface
+
+#### Financial System
+
+* Manual payment handling (no online payment integration for initial version)
+* Admin records payments received directly from students
+* Payment status update via admin panel
+* Debt monitoring
+* Discounts & promo codes
+* Payment history per student
+* Reports (exportable)
+
+---
+
+### 3.2 Teacher Panel
+
+* View assigned groups
+* Mark attendance
+* Assign homework
+* Grade students
+* Provide feedback
+
+---
+
+### 3.3 Student Panel
+
+* View schedule
+* Track attendance
+* Submit homework
+* View grades and progress
+* Check payment status
+
+---
+
+### 3.4 Parent Panel
+
+* Monitor student attendance
+* View grades and performance
+* Receive notifications
+* Communicate with teachers
+
+---
+
+## 4. Multi-Language Support (i18n)
+
+The system must support dynamic language switching:
+
+* Uzbek
+* English
+* Russian
+
+Implementation:
+
+* JSON-based translation files
+* Language switcher in UI
+* Persist selected language in user settings
+
+---
+
+## 5. Theme Support
+
+The system must support:
+
+* Light Mode
+* Dark Mode
+
+Requirements:
+
+* Toggle switch in UI
+* Save preference per user
+* Use CSS variables or Tailwind themes
+
+---
+
+## 6. Authentication & Security
+
+* JWT-based authentication
+* Password hashing (bcrypt)
+* Role-based access control (RBAC)
+* Password visible ONLY at creation time
+* Password reset functionality
+
+---
+
+## 7. Database Design (High-Level)
+
+### Users
+
+* id
+* fullName
+* username (unique)
+* passwordHash
+* role
+
+### Relations
+
+* Teacher → Students
+* Student → Parents
+* Groups → Students
+
+---
+
+## 8. Login Card PDF System
+
+* Generate PDF after student creation
+* Include student and parent credentials
+* Download & print support
+* One-time password visibility
+
+---
+
+## 9. Notifications System
+
+* SMS integration
+* Telegram bot integration
+* Event-based alerts:
+
+  * Missed class
+  * Payment due
+  * Homework assigned
+
+---
+
+## 10. Technology Stack
+
+### Frontend
+
+* Next.js (React framework)
+* Tailwind CSS
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB (Mongoose ODM)
+
+### Project Structure
+
+The project must be split into two separate folders:
+
+```
+root/
+  frontend/   → Next.js application
+  backend/    → Express.js API server
+```
+
+### Real-time (optional for future)
+
+* Socket.io
+
+### Integrations (future-ready)
+
+* Payment systems (Click, Payme)
+* SMS provider
+* Telegram Bot API
+
+---
+
+## 11. Multi-Tenant Architecture (Recommended) (Recommended)
+
+Each educational center will have isolated data:
+
+* Separate workspace per center
+* Subdomain structure:
+
+  * centername.platform.uz
+
+---
+
+## 12. Performance & Scalability
+
+* Modular backend architecture
+* API-first design
+* Caching (Redis optional)
+* Optimized DB queries
+
+---
+
+## 13. Future Enhancements
+
+* Mobile application
+* AI analytics (student performance prediction)
+* Advanced reporting dashboards
+
+---
+
+## 14. Deliverables
+
+* Fully functional CRM system
+* Admin panel
+* Role-based dashboards
+* PDF login system
+* Multi-language support
+* Theme switching (Dark/Light)
+
+---
+
+## 15. Summary
+
+This CRM platform aims to digitize and optimize educational center operations by providing automation, analytics, and user-friendly interfaces for all stakeholders.

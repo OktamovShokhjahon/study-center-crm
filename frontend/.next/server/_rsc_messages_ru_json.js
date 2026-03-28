@@ -1,0 +1,25 @@
+"use strict";
+/*
+ * ATTENTION: An "eval-source-map" devtool has been used.
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+exports.id = "_rsc_messages_ru_json";
+exports.ids = ["_rsc_messages_ru_json"];
+exports.modules = {
+
+/***/ "(rsc)/./messages/ru.json":
+/*!**************************!*\
+  !*** ./messages/ru.json ***!
+  \**************************/
+/***/ ((module) => {
+
+module.exports = /*#__PURE__*/JSON.parse('{"common":{"appName":"Учебный центр","login":"Войти","logout":"Выйти","register":"Первый запуск","themeLight":"Светлая","themeDark":"Тёмная","language":"Язык"},"adminNav":{"overview":"Обзор","students":"Ученики","teachers":"Преподаватели","courses":"Курсы","groups":"Группы","credentials":"Пароли","addStudent":"Добавить ученика"},"landing":{"badge":"Для одного центра","title":"Вся работа учебного центра — в одном окне","subtitle":"Ученики, преподаватели, расписание и оплаты — без таблиц в разных файлах.","ctaLogin":"Войти","feature1Title":"Роли","feature1Desc":"Админ, преподаватель, ученик и родители видят только своё.","feature2Title":"Финансы","feature2Desc":"Учёт платежей и задолженностей в одном месте.","feature3Title":"Три языка","feature3Desc":"Узбекский, английский или русский — переключение в любой момент."},"login":{"title":"С возвращением","subtitle":"Войдите в свою учётную запись","username":"Логин","password":"Пароль","submit":"Войти","error":"Неверные данные","forgot":"Сброс пароля","noAccount":"Первый раз здесь?"},"register":{"title":"Настройка центра","subtitle":"Один раз для этой установки: название центра и учётная запись администратора.","centerName":"Название учебного центра","adminFullName":"ФИО администратора","adminUsername":"Логин администратора","adminPassword":"Пароль (не менее 8 символов)","submit":"Завершить настройку","hasAccount":"Уже есть аккаунт?"},"dashboard":{"title":"Панель","admin":"Администратор","teacher":"Преподаватель","student":"Ученик","parent":"Родитель","welcome":"Добро пожаловать","revenueToday":"Выручка сегодня","activeStudents":"Активные ученики","outstanding":"Задолженность","newReg":"Новые сегодня","teachers":"Преподаватели","quickActions":"Быстрые действия","loadError":"Не удалось загрузить данные."},"admin":{"createStudent":"Добавить ученика","fullName":"Полное имя","create":"Создать и PDF","credentialsTitle":"Данные для входа (один раз — сохраните)","downloadPdf":"Скачать карточку входа (PDF)","backToDashboard":"К панели","addAnother":"Добавить ещё ученика","overviewSubtitle":"Ключевые показатели и быстрые ссылки.","addTeacher":"Добавить преподавателя","viewAllStudents":"Все ученики","viewAllTeachers":"Все преподаватели","studentsPageTitle":"Ученики","teachersPageTitle":"Преподаватели","tableName":"Имя","tableUsername":"Логин","tableJoined":"Регистрация","tableActions":"Действия","view":"Открыть","noStudents":"Учеников пока нет.","noTeachers":"Преподавателей пока нет.","addTeacherTitle":"Новый преподаватель","addTeacherSubtitle":"Временный пароль показывается один раз — сохраните его.","temporaryPassword":"Временный пароль","saveEdits":"Сохранить изменения","deleteUser":"Удалить учётную запись","coursesHeading":"Курсы","groupsHeading":"Группы","parentsHeading":"Учётные записи родителей","groupColName":"Группа","courseColName":"Курс","studentCount":"Учеников","studentDetailTitle":"Ученик","teacherDetailTitle":"Преподаватель","loading":"Загрузка…","editSaved":"Сохранено.","deleteFailed":"Не удалось удалить.","saveFailed":"Не удалось сохранить.","tablePassword":"Пароль","tableRole":"Роль","credentialsPageTitle":"Все пароли","credentialsPageSubtitle":"Хранятся для администратора. Защищайте эту систему.","coursesPageTitle":"Курсы","coursesPageSubtitle":"Назначьте каждому курсу преподавателя.","courseName":"Название курса","courseDescription":"Описание","assignedTeacher":"Преподаватель","createCourse":"Создать курс","noCourses":"Курсов пока нет.","deleteCourse":"Удалить","groupsPageTitle":"Группы","groupsPageSubtitle":"Группы связывают курс (и его преподавателя) с учениками.","createGroup":"Создать группу","noGroups":"Групп пока нет.","groupDetailTitle":"Группа","addStudentToGroup":"Добавить ученика в группу","removeFromGroup":"Убрать","selectStudent":"Выберите ученика","teacherAssigned":"Преподаватель (через курс)","newGroupTitle":"Новая группа","newGroupSubtitle":"Выберите курс — преподаватель курса применяется к этой группе.","passwordLabel":"Пароль в базе","setNewPassword":"Задать новый пароль","newPasswordPlaceholder":"Не менее 8 символов","passwordNote":"Пароли хранятся для просмотра администратором. Защищайте эту панель."}}');
+
+/***/ })
+
+};
+;
