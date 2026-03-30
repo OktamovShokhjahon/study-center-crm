@@ -1,12 +1,13 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { CopyableSecret } from "@/components/CopyableSecret";
+import { getDueCountdown } from "@/lib/dueCountdown";
 
 type StudentDetail = {
   _id: string;
@@ -16,6 +17,25 @@ type StudentDetail = {
   passwordPlain?: string | null;
   parents: { fullName: string; username: string; passwordPlain?: string | null }[];
   groups: { _id: string; name: string; courseName?: string }[];
+};
+
+type PaymentRow = {
+  _id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  dueAt?: string;
+  paidAt?: string;
+  notes?: string;
+  groupId?: { name?: string } | null;
+  courseId?: { name?: string } | null;
+};
+
+type AttendanceRow = {
+  _id: string;
+  date: string;
+  present: boolean;
+  groupId?: { name?: string } | null;
 };
 
 export default function StudentDetailPage() {
@@ -33,6 +53,23 @@ export default function StudentDetailPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
+  const [payments, setPayments] = useState<PaymentRow[]>([]);
+  const [payUpdating, setPayUpdating] = useState<string | null>(null);
+  const [attendance, setAttendance] = useState<AttendanceRow[]>([]);
+
+  const loadPayments = useCallback(() => {
+    if (!id) return;
+    apiFetch<PaymentRow[]>(`/api/payments?studentId=${id}`, { token })
+      .then(setPayments)
+      .catch(() => {});
+  }, [id, token]);
+
+  const loadAttendance = useCallback(() => {
+    if (!id) return;
+    apiFetch<AttendanceRow[]>(`/api/students/${id}/attendance`, { token })
+      .then(setAttendance)
+      .catch(() => {});
+  }, [id, token]);
 
   useEffect(() => {
     if (!id) return;
@@ -46,6 +83,11 @@ export default function StudentDetailPage() {
       .catch(() => setErr("load"))
       .finally(() => setLoading(false));
   }, [id, token]);
+
+  useEffect(() => {
+    loadPayments();
+    loadAttendance();
+  }, [loadPayments, loadAttendance]);
 
   async function onSave(e: FormEvent) {
     e.preventDefault();
@@ -68,6 +110,20 @@ export default function StudentDetailPage() {
       setErr("save");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function setPaymentStatus(paymentId: string, status: "PAID" | "PENDING") {
+    setPayUpdating(paymentId);
+    try {
+      await apiFetch(`/api/payments/${paymentId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+        token,
+      });
+      loadPayments();
+    } finally {
+      setPayUpdating(null);
     }
   }
 
@@ -171,6 +227,118 @@ export default function StudentDetailPage() {
           </button>
         </div>
       </form>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold text-[var(--foreground)]">{t("paymentsHeading")}</h2>
+        {payments.length === 0 ? (
+          <p className="mt-2 text-sm text-[var(--muted)]">—</p>
+        ) : (
+          <div className="card-surface mt-4 overflow-x-auto shadow-soft dark:shadow-soft-dark">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead className="border-b border-[var(--border)] bg-[var(--background)]/60 text-[var(--muted)]">
+                <tr>
+                  <th className="px-4 py-3 font-medium">{t("paymentAmount")}</th>
+                  <th className="px-4 py-3 font-medium">{t("paymentStatus")}</th>
+                  <th className="px-4 py-3 font-medium">{t("paymentDue")}</th>
+                  <th className="px-4 py-3 font-medium">{t("paymentCountdown")}</th>
+                  <th className="px-4 py-3 font-medium">{t("paymentGroup")}</th>
+                  <th className="px-4 py-3 font-medium">{t("tableActions")}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)]">
+                {payments.map((p) => {
+                  const cd = getDueCountdown(p.dueAt, p.status);
+                  const cdLabel =
+                    cd.type === "paid"
+                      ? t("paymentPaidShort")
+                      : cd.type === "none"
+                        ? "—"
+                        : cd.type === "overdue"
+                          ? t("paymentOverdueShort")
+                          : cd.days > 0
+                            ? t("countdownDaysHours", { days: cd.days, hours: cd.hours })
+                            : cd.hours > 0
+                              ? t("countdownHoursMinutes", { hours: cd.hours, minutes: cd.minutes })
+                              : t("countdownMinutes", { minutes: cd.minutes });
+                  return (
+                    <tr key={p._id}>
+                      <td className="px-4 py-3 tabular-nums text-[var(--foreground)]">
+                        {p.amount} {p.currency}
+                      </td>
+                      <td className="px-4 py-3 text-[var(--muted)]">{p.status}</td>
+                      <td className="px-4 py-3 text-[var(--muted)]">
+                        {p.dueAt ? new Date(p.dueAt).toLocaleString() : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-[var(--foreground)]">{cdLabel}</td>
+                      <td className="px-4 py-3 text-[var(--muted)]">
+                        {(p.groupId as { name?: string } | undefined)?.name ?? "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-2">
+                          {p.status !== "PAID" && (
+                            <button
+                              type="button"
+                              disabled={payUpdating === p._id}
+                              className="btn-primary !py-1.5 !px-3 text-xs"
+                              onClick={() => setPaymentStatus(p._id, "PAID")}
+                            >
+                              {t("markPaid")}
+                            </button>
+                          )}
+                          {p.status === "PAID" && (
+                            <button
+                              type="button"
+                              disabled={payUpdating === p._id}
+                              className="btn-secondary !py-1.5 !px-3 text-xs"
+                              onClick={() => setPaymentStatus(p._id, "PENDING")}
+                            >
+                              {t("markPending")}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold text-[var(--foreground)]">{t("attendanceHistory")}</h2>
+        {attendance.length === 0 ? (
+          <p className="mt-2 text-sm text-[var(--muted)]">—</p>
+        ) : (
+          <div className="card-surface mt-4 overflow-x-auto shadow-soft dark:shadow-soft-dark">
+            <table className="w-full min-w-[400px] text-left text-sm">
+              <thead className="border-b border-[var(--border)] bg-[var(--background)]/60 text-[var(--muted)]">
+                <tr>
+                  <th className="px-4 py-3 font-medium">{td("attendanceDateCol")}</th>
+                  <th className="px-4 py-3 font-medium">{td("attendanceGroupCol")}</th>
+                  <th className="px-4 py-3 font-medium">{td("attendanceStatusCol")}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)]">
+                {attendance.map((row) => (
+                  <tr key={row._id}>
+                    <td className="px-4 py-3 text-[var(--foreground)]">
+                      {new Date(row.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--muted)]">
+                      {(row.groupId as { name?: string } | undefined)?.name ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--foreground)]">
+                      {row.present ? td("presentLabel") : td("absentLabel")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold text-[var(--foreground)]">{t("parentsHeading")}</h2>

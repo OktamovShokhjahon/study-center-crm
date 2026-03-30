@@ -44,8 +44,8 @@ export function AdminSidebar() {
   const linkClass = (active: boolean) =>
     `flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition duration-200 md:gap-3 md:py-2.5 ${
       active
-        ? "bg-gradient-to-r from-violet-600/15 to-fuchsia-600/15 text-violet-700 dark:text-violet-300"
-        : "text-[var(--muted)] hover:bg-[var(--background)] hover:text-[var(--foreground)]"
+        ? "bg-gradient-to-r from-emerald-600/18 to-teal-600/12 text-emerald-800 shadow-sm shadow-emerald-900/5 dark:text-emerald-300"
+        : "text-[var(--muted)] hover:bg-[var(--accent-muted)]/50 hover:text-[var(--foreground)]"
     }`;
 
   return (

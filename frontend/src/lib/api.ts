@@ -1,5 +1,28 @@
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+export function getApiBase(): string {
+  return API;
+}
+
+/** Binary download (Excel/PDF) with Bearer token. */
+export async function downloadWithAuth(path: string, token: string | null, filename: string): Promise<void> {
+  const t = token ?? getStoredToken();
+  const res = await fetch(`${API}${path}`, {
+    headers: t ? { Authorization: `Bearer ${t}` } : {},
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(errText || res.statusText);
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("crm_token");

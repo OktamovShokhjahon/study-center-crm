@@ -17,7 +17,7 @@ export default async function HomePage() {
       <AppHeader />
       <main className="page-shell">
         <div className="mx-auto max-w-4xl text-center">
-          <p className="mb-4 inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--accent)] shadow-sm">
+          <p className="mb-4 inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
             {t("badge")}
           </p>
           <h1 className="text-balance text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl sm:leading-tight">
@@ -33,11 +33,14 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <ul className="mx-auto mt-20 grid max-w-5xl gap-6 sm:grid-cols-3">
+        <ul className="mx-auto mt-16 grid max-w-5xl gap-6 sm:grid-cols-3">
           {features.map(({ title, desc, Icon }) => (
             <li key={title}>
-              <article className="card-surface h-full p-6 transition hover:shadow-soft dark:hover:shadow-soft-dark">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-muted)] text-[var(--accent)]" aria-hidden>
+              <article className="card-surface h-full p-6">
+                <span
+                  className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-muted)] text-[var(--accent)]"
+                  aria-hidden
+                >
                   <Icon className="h-6 w-6" strokeWidth={1.75} />
                 </span>
                 <h2 className="mt-4 font-semibold text-[var(--foreground)]">{title}</h2>

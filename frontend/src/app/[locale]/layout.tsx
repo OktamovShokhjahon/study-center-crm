@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Manrope } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -9,7 +9,7 @@ import { UserSettingsSync } from "@/components/UserSettingsSync";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
-const fontSans = Inter({
+const fontSans = Manrope({
   subsets: ["latin", "cyrillic"],
   variable: "--font-sans",
   display: "swap",

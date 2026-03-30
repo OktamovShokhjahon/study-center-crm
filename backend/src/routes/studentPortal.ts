@@ -45,6 +45,7 @@ export function createStudentPortalRouter(jwtSecret: string): Router {
     const list = await Attendance.find({ studentId: req.auth.sub })
       .sort({ date: -1 })
       .limit(60)
+      .populate("groupId", "name")
       .lean();
     res.json(list);
   });
@@ -78,6 +79,8 @@ export function createStudentPortalRouter(jwtSecret: string): Router {
       studentId: req.auth.sub,
     })
       .sort({ createdAt: -1 })
+      .populate("groupId", "name")
+      .populate("courseId", "name")
       .lean();
     res.json(list);
   });

@@ -3,6 +3,7 @@ import { body, validationResult } from "express-validator";
 import { User } from "../models/User";
 import { Attendance } from "../models/Attendance";
 import { Grade } from "../models/Grade";
+import { Payment } from "../models/Payment";
 import { authMiddleware } from "../middleware/auth";
 import { requireRoles } from "../middleware/rbac";
 
@@ -22,12 +23,22 @@ export function createParentPortalRouter(jwtSecret: string): Router {
     const attendance = await Attendance.find({ studentId: parent.studentId })
       .sort({ date: -1 })
       .limit(30)
+      .populate("groupId", "name")
       .lean();
     const grades = await Grade.find({ studentId: parent.studentId })
       .sort({ createdAt: -1 })
       .limit(30)
       .lean();
-    res.json({ student, attendance, grades });
+    const payments = await Payment.find({
+      centerId: req.auth.centerId,
+      studentId: parent.studentId,
+    })
+      .sort({ createdAt: -1 })
+      .limit(40)
+      .populate("groupId", "name")
+      .populate("courseId", "name")
+      .lean();
+    res.json({ student, attendance, grades, payments });
   });
 
   router.post(

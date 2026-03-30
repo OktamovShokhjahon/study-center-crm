@@ -45,7 +45,7 @@ export default function LoginPage() {
   return (
     <>
       <AppHeader />
-      <main className="page-shell flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-12">
+      <main className="flex min-h-[calc(100vh-4rem)] w-full flex-col items-center justify-center px-4 py-12 sm:px-6">
         <div className="card-surface w-full max-w-md p-8 shadow-soft dark:shadow-soft-dark">
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">{t("title")}</h1>

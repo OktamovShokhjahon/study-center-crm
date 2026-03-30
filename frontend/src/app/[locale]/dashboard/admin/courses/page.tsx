@@ -10,6 +10,8 @@ type Course = {
   _id: string;
   name: string;
   description?: string;
+  price?: number;
+  currency?: string;
   teacherId: { fullName?: string; username?: string };
 };
 type Teacher = { _id: string; fullName: string; username: string };
@@ -22,6 +24,8 @@ export default function AdminCoursesPage() {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("0");
+  const [currency, setCurrency] = useState("UZS");
   const [teacherId, setTeacherId] = useState("");
 
   const load = useCallback(() => {
@@ -45,11 +49,18 @@ export default function AdminCoursesPage() {
     e.preventDefault();
     await apiFetch("/api/courses", {
       method: "POST",
-      body: JSON.stringify({ name, description: description || undefined, teacherId }),
+      body: JSON.stringify({
+        name,
+        description: description || undefined,
+        teacherId,
+        price: Number(price),
+        currency: currency || "UZS",
+      }),
       token,
     });
     setName("");
     setDescription("");
+    setPrice("0");
     load();
   }
 
@@ -70,6 +81,27 @@ export default function AdminCoursesPage() {
           <div className="sm:col-span-2 lg:col-span-1">
             <label className="label">{t("courseName")}</label>
             <input className="input-field" value={name} onChange={(e) => setName(e.target.value)} required />
+          </div>
+          <div>
+            <label className="label">{t("coursePrice")}</label>
+            <input
+              className="input-field"
+              type="number"
+              min={0}
+              step="1"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="label">{t("currency")}</label>
+            <input
+              className="input-field"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              maxLength={8}
+            />
           </div>
           <div>
             <label className="label">{t("assignedTeacher")}</label>
@@ -111,6 +143,7 @@ export default function AdminCoursesPage() {
               <thead className="border-b border-[var(--border)] bg-[var(--background)]/60 text-[var(--muted)]">
                 <tr>
                   <th className="px-4 py-3 font-medium">{t("courseName")}</th>
+                  <th className="px-4 py-3 font-medium">{t("coursePrice")}</th>
                   <th className="px-4 py-3 font-medium">{t("assignedTeacher")}</th>
                   <th className="px-4 py-3 font-medium">{t("tableActions")}</th>
                 </tr>
@@ -119,6 +152,9 @@ export default function AdminCoursesPage() {
                 {courses.map((c) => (
                   <tr key={c._id}>
                     <td className="px-4 py-3 font-medium text-[var(--foreground)]">{c.name}</td>
+                    <td className="px-4 py-3 text-[var(--muted)] tabular-nums">
+                      {c.price ?? 0} {c.currency ?? "UZS"}
+                    </td>
                     <td className="px-4 py-3 text-[var(--muted)]">
                       {(c.teacherId as { fullName?: string })?.fullName ?? "—"}
                     </td>

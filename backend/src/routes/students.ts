@@ -4,11 +4,13 @@ import { Types } from "mongoose";
 import { User } from "../models/User";
 import { Center } from "../models/Center";
 import { Group } from "../models/Group";
+import { Attendance } from "../models/Attendance";
 import { authMiddleware } from "../middleware/auth";
 import { requireRoles } from "../middleware/rbac";
 import { hashPassword, generateRandomPassword } from "../utils/password";
 import { generateStudentUsername, generateParentUsername } from "../utils/username";
 import { buildLoginCardPdf } from "../services/loginCardPdf";
+import { ensureTuitionPaymentForGroupEnrollment } from "../services/tuition";
 
 export function createStudentsRouter(jwtSecret: string): Router {
   const router = Router();
@@ -81,6 +83,12 @@ export function createStudentsRouter(jwtSecret: string): Router {
           if (!group.studentIds.some((id) => id.equals(studentUser._id))) {
             group.studentIds.push(studentUser._id);
             await group.save();
+            await ensureTuitionPaymentForGroupEnrollment({
+              studentId: studentUser._id,
+              groupId: group._id,
+              centerId,
+              recordedBy: new Types.ObjectId(req.auth.sub),
+            });
           }
         }
       }
@@ -121,6 +129,30 @@ export function createStudentsRouter(jwtSecret: string): Router {
     })
       .select("fullName username createdAt parentUserIds +passwordPlain")
       .sort({ createdAt: -1 })
+      .lean();
+    res.json(list);
+  });
+
+  router.get("/:id/attendance", param("id").isMongoId(), async (req, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+    if (!req.auth) return;
+    const student = await User.findOne({
+      _id: req.params!.id,
+      centerId: req.auth.centerId,
+      role: "STUDENT",
+    }).select("_id");
+    if (!student) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+    const list = await Attendance.find({ studentId: student._id })
+      .sort({ date: -1 })
+      .limit(60)
+      .populate("groupId", "name")
       .lean();
     res.json(list);
   });

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 import { AppHeader } from "@/components/AppHeader";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -47,12 +47,14 @@ export default function TeacherDashboardPage() {
             <ul className="mt-4 grid gap-4 sm:grid-cols-2">
               {groups.map((g) => (
                 <li key={g._id}>
-                  <article className="card-surface p-5 shadow-soft transition hover:shadow-md dark:shadow-soft-dark">
-                    <h3 className="font-semibold text-[var(--foreground)]">{g.name}</h3>
-                    <p className="mt-1 text-sm text-[var(--muted)]">
-                      {(g.courseId as { name?: string })?.name ?? "Course"}
-                    </p>
-                  </article>
+                  <Link href={`/dashboard/teacher/groups/${g._id}`}>
+                    <article className="card-surface p-5 shadow-soft transition hover:shadow-md dark:shadow-soft-dark">
+                      <h3 className="font-semibold text-[var(--foreground)]">{g.name}</h3>
+                      <p className="mt-1 text-sm text-[var(--muted)]">
+                        {(g.courseId as { name?: string })?.name ?? "Course"}
+                      </p>
+                    </article>
+                  </Link>
                 </li>
               ))}
             </ul>

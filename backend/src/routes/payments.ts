@@ -23,6 +23,8 @@ export function createPaymentsRouter(jwtSecret: string): Router {
     const list = await Payment.find(filter)
       .sort({ createdAt: -1 })
       .populate("studentId", "fullName username")
+      .populate("groupId", "name")
+      .populate("courseId", "name price")
       .lean();
     res.json(list);
   });
@@ -94,6 +96,8 @@ export function createPaymentsRouter(jwtSecret: string): Router {
         payment.status = req.body.status;
         if (req.body.status === "PAID" || req.body.status === "PARTIAL") {
           payment.paidAt = new Date();
+        } else if (req.body.status === "PENDING" || req.body.status === "OVERDUE") {
+          payment.paidAt = undefined;
         }
       }
       await payment.save();

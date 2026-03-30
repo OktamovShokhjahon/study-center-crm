@@ -1,5 +1,5 @@
 import { Router, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { body, param, query, validationResult } from "express-validator";
 import { Types } from "mongoose";
 import { Group } from "../models/Group";
 import { Course } from "../models/Course";
@@ -27,6 +27,127 @@ export function createTeacherRouter(jwtSecret: string): Router {
       .lean();
     res.json(groups);
   });
+
+  router.get(
+    "/groups/:groupId",
+    param("groupId").isMongoId(),
+    query("date").optional().isISO8601(),
+    async (req, res: Response) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+      if (!req.auth) return;
+      const group = await Group.findOne({
+        _id: req.params!.groupId,
+        centerId: req.auth.centerId,
+      }).lean();
+      if (!group) {
+        res.status(404).json({ error: "Group not found" });
+        return;
+      }
+      const course = await Course.findOne({
+        _id: group.courseId,
+        teacherId: req.auth.sub,
+      });
+      if (!course) {
+        res.status(403).json({ error: "Not your group" });
+        return;
+      }
+      const students = await User.find({
+        _id: { $in: group.studentIds || [] },
+        centerId: req.auth.centerId,
+        role: "STUDENT",
+      })
+        .select("fullName")
+        .sort({ fullName: 1 })
+        .lean();
+
+      let attendanceByStudent: Record<string, boolean> = {};
+      const dateStr = (req.query as { date?: string }).date;
+      if (dateStr) {
+        const date = new Date(dateStr);
+        date.setHours(0, 0, 0, 0);
+        const atts = await Attendance.find({
+          groupId: group._id,
+          date,
+        }).lean();
+        attendanceByStudent = Object.fromEntries(
+          atts.map((a) => [a.studentId.toString(), a.present])
+        );
+      }
+
+      res.json({
+        _id: group._id,
+        name: group.name,
+        schedule: group.schedule,
+        courseName: course.name,
+        students: students.map((s) => ({
+          _id: s._id,
+          fullName: s.fullName,
+          present:
+            attendanceByStudent[s._id.toString()] !== undefined
+              ? attendanceByStudent[s._id.toString()]
+              : undefined,
+        })),
+      });
+    }
+  );
+
+  router.post(
+    "/attendance/batch",
+    body("groupId").isMongoId(),
+    body("date").isISO8601(),
+    body("entries").isArray({ min: 1 }),
+    body("entries.*.studentId").isMongoId(),
+    body("entries.*.present").isBoolean(),
+    async (req, res: Response) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+      if (!req.auth) return;
+      const group = await Group.findOne({
+        _id: req.body.groupId,
+        centerId: req.auth.centerId,
+      });
+      if (!group) {
+        res.status(404).json({ error: "Group not found" });
+        return;
+      }
+      const course = await Course.findOne({
+        _id: group.courseId,
+        teacherId: req.auth.sub,
+      });
+      if (!course) {
+        res.status(403).json({ error: "Not your group" });
+        return;
+      }
+      const date = new Date(req.body.date as string);
+      date.setHours(0, 0, 0, 0);
+      const allowed = new Set((group.studentIds || []).map((id) => id.toString()));
+      const results = [];
+      for (const e of req.body.entries as { studentId: string; present: boolean }[]) {
+        if (!allowed.has(e.studentId)) continue;
+        const att = await Attendance.findOneAndUpdate(
+          {
+            groupId: group._id,
+            studentId: e.studentId,
+            date,
+          },
+          {
+            present: e.present,
+            recordedBy: new Types.ObjectId(req.auth.sub),
+          },
+          { upsert: true, new: true }
+        );
+        results.push(att);
+      }
+      res.json({ saved: results.length });
+    }
+  );
 
   router.post(
     "/attendance",

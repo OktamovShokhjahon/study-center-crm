@@ -6,6 +6,8 @@ export interface IPayment {
   _id: Types.ObjectId;
   studentId: Types.ObjectId;
   centerId: Types.ObjectId;
+  groupId?: Types.ObjectId;
+  courseId?: Types.ObjectId;
   amount: number;
   currency: string;
   status: PaymentStatus;
@@ -23,6 +25,8 @@ const PaymentSchema = new Schema<IPayment>(
   {
     studentId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
     centerId: { type: Schema.Types.ObjectId, ref: "Center", required: true, index: true },
+    groupId: { type: Schema.Types.ObjectId, ref: "Group", index: true },
+    courseId: { type: Schema.Types.ObjectId, ref: "Course", index: true },
     amount: { type: Number, required: true, min: 0 },
     currency: { type: String, default: "UZS" },
     status: {

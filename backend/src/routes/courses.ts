@@ -28,6 +28,8 @@ export function createCoursesRouter(jwtSecret: string): Router {
     body("name").trim().notEmpty(),
     body("teacherId").isMongoId(),
     body("description").optional().trim(),
+    body("price").isFloat({ min: 0 }),
+    body("currency").optional().trim().isLength({ min: 1, max: 8 }),
     async (req, res: Response) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -47,6 +49,8 @@ export function createCoursesRouter(jwtSecret: string): Router {
       const course = await Course.create({
         name: req.body.name,
         description: req.body.description,
+        price: Number(req.body.price),
+        currency: (req.body.currency as string | undefined)?.trim() || "UZS",
         centerId: new Types.ObjectId(req.auth.centerId),
         teacherId: teacher._id,
       });
@@ -59,6 +63,8 @@ export function createCoursesRouter(jwtSecret: string): Router {
     param("id").isMongoId(),
     body("name").optional().trim().notEmpty(),
     body("teacherId").optional().isMongoId(),
+    body("price").optional().isFloat({ min: 0 }),
+    body("currency").optional().trim().isLength({ min: 1, max: 8 }),
     async (req, res: Response) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -76,6 +82,8 @@ export function createCoursesRouter(jwtSecret: string): Router {
       }
       if (req.body.name) course.name = req.body.name;
       if (req.body.description !== undefined) course.description = req.body.description;
+      if (req.body.price !== undefined) course.price = Number(req.body.price);
+      if (req.body.currency !== undefined) course.currency = String(req.body.currency).trim();
       if (req.body.teacherId) {
         const teacher = await User.findOne({
           _id: req.body.teacherId,

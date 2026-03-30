@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "@/i18n/routing";
 import { AppHeader } from "@/components/AppHeader";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { PageEnter } from "@/components/Motion";
 import { useAuth } from "@/context/AuthContext";
 
 export default function AdminSectionLayout({ children }: { children: React.ReactNode }) {
@@ -35,9 +34,7 @@ export default function AdminSectionLayout({ children }: { children: React.React
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[1600px] flex-col md:flex-row">
         <AdminSidebar />
         <div className="min-w-0 flex-1 border-t border-[var(--border)] bg-[var(--background)]/40 md:border-l md:border-t-0">
-          <div className="px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
-            <PageEnter>{children}</PageEnter>
-          </div>
+          <div className="px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</div>
         </div>
       </div>
     </>

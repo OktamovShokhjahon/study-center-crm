@@ -22,10 +22,10 @@ export function AppHeader() {
   const router = useRouter();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)]/80 bg-[var(--header-bg)] backdrop-blur-md">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-sm font-bold text-white shadow-md shadow-violet-500/25 dark:from-violet-500 dark:to-fuchsia-500">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 text-sm font-bold text-white shadow-md shadow-emerald-600/30 dark:from-emerald-500 dark:to-teal-500">
             SC
           </span>
           <span className="font-semibold tracking-tight text-[var(--foreground)] transition group-hover:text-[var(--accent)]">

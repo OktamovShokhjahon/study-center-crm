@@ -7,6 +7,7 @@ import { User } from "../models/User";
 import { authMiddleware } from "../middleware/auth";
 import { requireRoles } from "../middleware/rbac";
 import { hasConflict } from "../utils/scheduleConflict";
+import { ensureTuitionPaymentForGroupEnrollment } from "../services/tuition";
 
 export function createGroupsRouter(jwtSecret: string): Router {
   const router = Router();
@@ -183,6 +184,12 @@ export function createGroupsRouter(jwtSecret: string): Router {
       if (!group.studentIds.some((id) => id.equals(student._id))) {
         group.studentIds.push(student._id);
         await group.save();
+        await ensureTuitionPaymentForGroupEnrollment({
+          studentId: student._id,
+          groupId: group._id,
+          centerId: new Types.ObjectId(req.auth.centerId),
+          recordedBy: new Types.ObjectId(req.auth.sub),
+        });
       }
       res.json(group);
     }
